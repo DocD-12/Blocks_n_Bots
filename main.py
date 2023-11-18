@@ -6,8 +6,8 @@ import time
 pygame.init()
 
 # Установка размеров окна
-screen_width = 1000
-screen_height = 1000
+screen_width = 800
+screen_height = 800
 win = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Capture The Coin Game")
 
@@ -21,13 +21,39 @@ green = (0, 255, 0)
 purple = (128, 0, 128)
 orange = (255, 165, 0)
 grey = (128, 128, 128)
+lgrey = (196, 196, 196)
+dgrey = (64, 64, 64)
+
 
 # Игровое поле
-def draw_grid():
-    for x in range(0, screen_width, 50):
-        pygame.draw.line(win, white, (x, 0), (x, screen_height))
-    for y in range(0, screen_height, 50):
-        pygame.draw.line(win, white, (0, y), (screen_width, y))
+class Grid:
+    def __init__(self, h, w, sq_size = 50):
+        self.height = h
+        self.width = w
+        self.sq = [[-1 if (i == 0 or i == h - 1 or j == 0 or j == w - 1) else 0
+                      for j in range(w)] for i in range(h)]
+        self.size = sq_size
+
+
+    def print_grid(self):
+        print(*self.sq, sep='\n')
+
+    def draw_grid(self):
+        for x in range(0, screen_width, 50):
+            pygame.draw.line(win, white, (x, 0), (x, screen_height))
+        for y in range(0, screen_height, 50):
+            pygame.draw.line(win, white, (0, y), (screen_width, y))
+
+        for i in range(self.height):
+            for j in range(self.width):
+                if self.sq[i][j] == 0:
+                    pygame.draw.rect(win, lgrey, (i * self.size, j * self.size + 50, self.size - 1, self.size - 1))
+                elif self.sq[i][j] == -1:
+                    pygame.draw.rect(win, dgrey, (i * self.size, j * self.size + 50, self.size - 1, self.size - 1))
+                elif self.sq[i][j] == 1:
+                    pygame.draw.circle(win, red, (i * self.size, j * self.size + 50, self.size - 1))
+                elif self.sq[i][j] == 2:
+                    pygame.draw.circle(win, blue, (i * self.size, j * self.size + 50, self.size - 1))
 
 # Игрок
 class Player:
@@ -50,6 +76,9 @@ class Coin:
 
     def draw(self):
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
+
+# Создание СЕТКИ
+maingrid = Grid(10, 10, 50)
 
 # Создание игроков
 player1 = Player(50, 50, red)
@@ -119,7 +148,7 @@ while running:
 
     # Отображение игрового поля
     win.fill(grey)
-    draw_grid()
+    maingrid.draw_grid()
 
     # Отображение игроков
     player4.draw()
