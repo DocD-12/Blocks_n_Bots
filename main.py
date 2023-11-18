@@ -37,13 +37,9 @@ class Grid:
 
     def print_grid(self):
         print(*self.sq, sep='\n')
-
+    def addplayer(self, x, y):
+        self.sq[x][y] = 2
     def draw_grid(self):
-        for x in range(0, screen_width, 50):
-            pygame.draw.line(win, white, (x, 0), (x, screen_height))
-        for y in range(0, screen_height, 50):
-            pygame.draw.line(win, white, (0, y), (screen_width, y))
-
         for i in range(self.height):
             for j in range(self.width):
                 if self.sq[i][j] == 0:
@@ -51,9 +47,9 @@ class Grid:
                 elif self.sq[i][j] == -1:
                     pygame.draw.rect(win, dgrey, (i * self.size, j * self.size + 50, self.size - 1, self.size - 1))
                 elif self.sq[i][j] == 1:
-                    pygame.draw.circle(win, red, (i * self.size, j * self.size + 50, self.size - 1))
+                    pygame.draw.circle(win, red, (i * self.size, j * self.size + 50), self.size - 1)
                 elif self.sq[i][j] == 2:
-                    pygame.draw.circle(win, blue, (i * self.size, j * self.size + 50, self.size - 1))
+                    pygame.draw.circle(win, blue, (i * self.size + self.size / 2, j * self.size + 50 + self.size / 2), self.size / 2 - 1)
 
 # Игрок
 class Player:
@@ -78,7 +74,8 @@ class Coin:
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
 
 # Создание СЕТКИ
-maingrid = Grid(10, 10, 50)
+maingrid = Grid(16, 15, 50)
+maingrid.addplayer(2, 2)
 
 # Создание игроков
 player1 = Player(50, 50, red)
