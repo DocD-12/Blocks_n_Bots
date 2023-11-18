@@ -20,6 +20,7 @@ yellow = (255, 255, 0)
 green = (0, 255, 0)
 purple = (128, 0, 128)
 orange = (255, 165, 0)
+grey = (128, 128, 128)
 
 # Игровое поле
 def draw_grid():
@@ -34,7 +35,7 @@ class Player:
         self.x = x
         self.y = y
         self.color = color
-        self.radius = 20
+        self.radius = 25
 
     def draw(self):
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
@@ -117,7 +118,7 @@ while running:
     player4.move(keys)
 
     # Отображение игрового поля
-    win.fill(black)
+    win.fill(grey)
     draw_grid()
 
     # Отображение игроков
