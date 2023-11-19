@@ -1,0 +1,275 @@
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\nimport random\r\nimport time\r\n\r\n# Инициализация Pygame\r\npygame.init()\r\n\r\n# Установка размеров окна\r\nscreen_width = 800\r\nscreen_height = 800\r\nwin = pygame.display.set_mode((screen_width, screen_height))\r\npygame.display.set_caption(\"Capture The Coin Game\")\r\n\r\n# Определение цветов\r\nwhite = (255, 255, 255)\r\nblack = (0, 0, 0)\r\nred = (255, 0, 0)\r\nblue = (0, 0, 255)\r\nyellow = (255, 255, 0)\r\ngreen = (0, 255, 0)\r\npurple = (128, 0, 128)\r\norange = (255, 165, 0)\r\ngrey = (128, 128, 128)\r\nlgrey = (196, 196, 196)\r\ndgrey = (64, 64, 64)\r\n\r\n\r\n# Игровое поле\r\nclass Grid:\r\n    def __init__(self, h, w, sq_size = 50):\r\n        self.height = h\r\n        self.width = w\r\n        self.sq = [[-1 if (i == 0 or i == h - 1 or j == 0 or j == w - 1) else 0\r\n                      for j in range(w)] for i in range(h)]\r\n        self.size = sq_size\r\n\r\n\r\n    def print_grid(self):\r\n        print(*self.sq, sep='\\n')\r\n    def addplayer(self, x, y):\r\n        self.sq[x][y] = 2\r\n    def draw_grid(self):\r\n        for i in range(self.height):\r\n            for j in range(self.width):\r\n                if self.sq[i][j] == 0:\r\n                    pygame.draw.rect(win, lgrey, (i * self.size, j * self.size + 50, self.size - 1, self.size - 1))\r\n                elif self.sq[i][j] == -1:\r\n                    pygame.draw.rect(win, dgrey, (i * self.size, j * self.size + 50, self.size - 1, self.size - 1))\r\n                elif self.sq[i][j] == 1:\r\n                    pygame.draw.circle(win, red, (i * self.size, j * self.size + 50), self.size - 1)\r\n                elif self.sq[i][j] == 2:\r\n                    pygame.draw.circle(win, blue, (i * self.size + self.size / 2, j * self.size + 50 + self.size / 2), self.size / 2 - 1)\r\n\r\n# Игрок\r\nclass Player:\r\n    def __init__(self, x, y, color):\r\n        self.x = x\r\n        self.y = y\r\n        self.color = color\r\n        self.radius = 25\r\n\r\n    def draw(self):\r\n        pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)\r\n\r\n# Монетка\r\nclass Coin:\r\n    def __init__(self, x, y):\r\n        self.x = x\r\n        self.y = y\r\n        self.radius = 10\r\n        self.color = yellow\r\n\r\n    def draw(self):\r\n        pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)\r\n\r\n# Создание СЕТКИ\r\nmaingrid = Grid(16, 15, 50)\r\nmaingrid.addplayer(2, 2)\r\n\r\n# Создание игроков\r\nplayer1 = Player(50, 50, red)\r\nplayer2 = Player(screen_width - 50, 50, blue)\r\n\r\n# Создание монеток\r\ncoin1 = Coin(200, 300)\r\ncoin2 = Coin(600, 300)\r\n\r\n# Создание ИИ ботов\r\nclass AIPlayer:\r\n    def __init__(self, x, y, color):\r\n        self.x = x\r\n        self.y = y\r\n        self.color = color\r\n        self.radius = 20\r\n\r\n    def draw(self):\r\n        pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)\r\n\r\n    def move_randomly(self):\r\n        # Простое случайное движение для ИИ\r\n        self.x += random.randint(-3, 3)\r\n        self.y += random.randint(-3, 3)\r\n\r\n# Создание ИИ ботов\r\nbot1 = AIPlayer(50, screen_height - 50, green)\r\nbot2 = AIPlayer(screen_width - 50, screen_height - 50, purple)\r\nbot3 = AIPlayer(50, 50, orange)\r\n\r\n# Создание четвертого игрока, управляемого с клавиатуры\r\nclass KeyboardPlayer:\r\n    def __init__(self, x, y, color):\r\n        self.x = x\r\n        self.y = y\r\n        self.color = color\r\n        self.radius = 20\r\n\r\n    def draw(self):\r\n        pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)\r\n\r\n    def move(self, keys):\r\n        # Управление с клавиатуры\r\n        if keys[pygame.K_LEFT]:\r\n            self.x -= 3\r\n        if keys[pygame.K_RIGHT]:\r\n            self.x += 3\r\n        if keys[pygame.K_UP]:\r\n            self.y -= 3\r\n        if keys[pygame.K_DOWN]:\r\n            self.y += 3\r\n\r\nplayer4 = KeyboardPlayer(screen_width - 50, screen_height - 50, yellow)\r\n\r\n# Основной игровой цикл\r\nrunning = True\r\nstart_time = time.time()\r\ngame_duration = 105  # Время в секундах\r\nwhile running:\r\n    for event in pygame.event.get():\r\n        if event.type == pygame.QUIT:\r\n            running = False\r\n\r\n    # Управление с клавиатуры для четвертого игрока\r\n    keys = pygame.key.get_pressed()\r\n    player4.move(keys)\r\n\r\n    # Отображение игрового поля\r\n    win.fill(grey)\r\n    maingrid.draw_grid()\r\n\r\n    # Отображение игроков\r\n    player4.draw()\r\n\r\n    # Отображение монеток\r\n    coin1.draw()\r\n    coin2.draw()\r\n\r\n    # Отображение ИИ ботов\r\n    bot1.move_randomly()\r\n    bot2.move_randomly()\r\n    bot3.move_randomly()\r\n    bot1.draw()\r\n    bot2.draw()\r\n    bot3.draw()\r\n\r\n    # Отображение текущих очков\r\n    font = pygame.font.Font(None, 36)\r\n    text = font.render(f'Player 1: 0  Player 2: 0', True, white)\r\n    win.blit(text, (10, 10))\r\n\r\n    # Отображение времени игры\r\n    passed_time = int(time.time() - start_time)\r\n    remaining_time = max(0, game_duration - passed_time)\r\n    time_text = font.render(f'Time: {remaining_time // 60}:{remaining_time % 60:02d}', True, white)\r\n    win.blit(time_text, (screen_width - 150, 10))\r\n\r\n    # Обновление экрана\r\n    pygame.display.update()\r\n\r\n    # Проверка окончания времени игры\r\n    if passed_time >= game_duration:\r\n        running = False\r\n\r\n# Завершение игры\r\npygame.quit()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	(revision f1e6e9800548ac602876b902d5dfda6eef739369)
++++ b/main.py	(date 1700398045075)
+@@ -1,184 +1,16 @@
+-import pygame
+-import random
+-import time
+-
+-# Инициализация Pygame
+-pygame.init()
+-
+-# Установка размеров окна
+-screen_width = 800
+-screen_height = 800
+-win = pygame.display.set_mode((screen_width, screen_height))
+-pygame.display.set_caption("Capture The Coin Game")
+-
+-# Определение цветов
+-white = (255, 255, 255)
+-black = (0, 0, 0)
+-red = (255, 0, 0)
+-blue = (0, 0, 255)
+-yellow = (255, 255, 0)
+-green = (0, 255, 0)
+-purple = (128, 0, 128)
+-orange = (255, 165, 0)
+-grey = (128, 128, 128)
+-lgrey = (196, 196, 196)
+-dgrey = (64, 64, 64)
+-
+-
+-# Игровое поле
+-class Grid:
+-    def __init__(self, h, w, sq_size = 50):
+-        self.height = h
+-        self.width = w
+-        self.sq = [[-1 if (i == 0 or i == h - 1 or j == 0 or j == w - 1) else 0
+-                      for j in range(w)] for i in range(h)]
+-        self.size = sq_size
+-
+-
+-    def print_grid(self):
+-        print(*self.sq, sep='\n')
+-    def addplayer(self, x, y):
+-        self.sq[x][y] = 2
+-    def draw_grid(self):
+-        for i in range(self.height):
+-            for j in range(self.width):
+-                if self.sq[i][j] == 0:
+-                    pygame.draw.rect(win, lgrey, (i * self.size, j * self.size + 50, self.size - 1, self.size - 1))
+-                elif self.sq[i][j] == -1:
+-                    pygame.draw.rect(win, dgrey, (i * self.size, j * self.size + 50, self.size - 1, self.size - 1))
+-                elif self.sq[i][j] == 1:
+-                    pygame.draw.circle(win, red, (i * self.size, j * self.size + 50), self.size - 1)
+-                elif self.sq[i][j] == 2:
+-                    pygame.draw.circle(win, blue, (i * self.size + self.size / 2, j * self.size + 50 + self.size / 2), self.size / 2 - 1)
+-
+-# Игрок
+-class Player:
+-    def __init__(self, x, y, color):
+-        self.x = x
+-        self.y = y
+-        self.color = color
+-        self.radius = 25
+-
+-    def draw(self):
+-        pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
+-
+-# Монетка
+-class Coin:
+-    def __init__(self, x, y):
+-        self.x = x
+-        self.y = y
+-        self.radius = 10
+-        self.color = yellow
++# This is a sample Python script.
+ 
+-    def draw(self):
+-        pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
++# Press Shift+F10 to execute it or replace it with your code.
++# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+ 
+-# Создание СЕТКИ
+-maingrid = Grid(16, 15, 50)
+-maingrid.addplayer(2, 2)
+ 
+-# Создание игроков
+-player1 = Player(50, 50, red)
+-player2 = Player(screen_width - 50, 50, blue)
++def print_hi(name):
++    # Use a breakpoint in the code line below to debug your script.
++    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+ 
+-# Создание монеток
+-coin1 = Coin(200, 300)
+-coin2 = Coin(600, 300)
+ 
+-# Создание ИИ ботов
+-class AIPlayer:
+-    def __init__(self, x, y, color):
+-        self.x = x
+-        self.y = y
+-        self.color = color
+-        self.radius = 20
++# Press the green button in the gutter to run the script.
++if __name__ == '__main__':
++    print_hi('PyCharm')
+ 
+-    def draw(self):
+-        pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
+-
+-    def move_randomly(self):
+-        # Простое случайное движение для ИИ
+-        self.x += random.randint(-3, 3)
+-        self.y += random.randint(-3, 3)
+-
+-# Создание ИИ ботов
+-bot1 = AIPlayer(50, screen_height - 50, green)
+-bot2 = AIPlayer(screen_width - 50, screen_height - 50, purple)
+-bot3 = AIPlayer(50, 50, orange)
+-
+-# Создание четвертого игрока, управляемого с клавиатуры
+-class KeyboardPlayer:
+-    def __init__(self, x, y, color):
+-        self.x = x
+-        self.y = y
+-        self.color = color
+-        self.radius = 20
+-
+-    def draw(self):
+-        pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
+-
+-    def move(self, keys):
+-        # Управление с клавиатуры
+-        if keys[pygame.K_LEFT]:
+-            self.x -= 3
+-        if keys[pygame.K_RIGHT]:
+-            self.x += 3
+-        if keys[pygame.K_UP]:
+-            self.y -= 3
+-        if keys[pygame.K_DOWN]:
+-            self.y += 3
+-
+-player4 = KeyboardPlayer(screen_width - 50, screen_height - 50, yellow)
+-
+-# Основной игровой цикл
+-running = True
+-start_time = time.time()
+-game_duration = 105  # Время в секундах
+-while running:
+-    for event in pygame.event.get():
+-        if event.type == pygame.QUIT:
+-            running = False
+-
+-    # Управление с клавиатуры для четвертого игрока
+-    keys = pygame.key.get_pressed()
+-    player4.move(keys)
+-
+-    # Отображение игрового поля
+-    win.fill(grey)
+-    maingrid.draw_grid()
+-
+-    # Отображение игроков
+-    player4.draw()
+-
+-    # Отображение монеток
+-    coin1.draw()
+-    coin2.draw()
+-
+-    # Отображение ИИ ботов
+-    bot1.move_randomly()
+-    bot2.move_randomly()
+-    bot3.move_randomly()
+-    bot1.draw()
+-    bot2.draw()
+-    bot3.draw()
+-
+-    # Отображение текущих очков
+-    font = pygame.font.Font(None, 36)
+-    text = font.render(f'Player 1: 0  Player 2: 0', True, white)
+-    win.blit(text, (10, 10))
+-
+-    # Отображение времени игры
+-    passed_time = int(time.time() - start_time)
+-    remaining_time = max(0, game_duration - passed_time)
+-    time_text = font.render(f'Time: {remaining_time // 60}:{remaining_time % 60:02d}', True, white)
+-    win.blit(time_text, (screen_width - 150, 10))
+-
+-    # Обновление экрана
+-    pygame.display.update()
+-
+-    # Проверка окончания времени игры
+-    if passed_time >= game_duration:
+-        running = False
+-
+-# Завершение игры
+-pygame.quit()
++# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+Index: .idea/.gitignore
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+deleted file mode 100644
+--- a/.idea/.gitignore	(revision f1e6e9800548ac602876b902d5dfda6eef739369)
++++ /dev/null	(revision f1e6e9800548ac602876b902d5dfda6eef739369)
+@@ -1,3 +0,0 @@
+-# Default ignored files
+-/shelf/
+-/workspace.xml
+Index: .idea/vcs.xml
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+deleted file mode 100644
+--- a/.idea/vcs.xml	(revision f1e6e9800548ac602876b902d5dfda6eef739369)
++++ /dev/null	(revision f1e6e9800548ac602876b902d5dfda6eef739369)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="VcsDirectoryMappings">
+-    <mapping directory="" vcs="Git" />
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/modules.xml
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+deleted file mode 100644
+--- a/.idea/modules.xml	(revision f1e6e9800548ac602876b902d5dfda6eef739369)
++++ /dev/null	(revision f1e6e9800548ac602876b902d5dfda6eef739369)
+@@ -1,8 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="ProjectModuleManager">
+-    <modules>
+-      <module fileurl="file://$PROJECT_DIR$/.idea/Blocks_n_Bots.iml" filepath="$PROJECT_DIR$/.idea/Blocks_n_Bots.iml" />
+-    </modules>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/Blocks_n_Bots.iml
+===================================================================
+diff --git a/.idea/Blocks_n_Bots.iml b/.idea/Blocks_n_Bots.iml
+deleted file mode 100644
+--- a/.idea/Blocks_n_Bots.iml	(revision f1e6e9800548ac602876b902d5dfda6eef739369)
++++ /dev/null	(revision f1e6e9800548ac602876b902d5dfda6eef739369)
+@@ -1,10 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<module type="PYTHON_MODULE" version="4">
+-  <component name="NewModuleRootManager">
+-    <content url="file://$MODULE_DIR$">
+-      <excludeFolder url="file://$MODULE_DIR$/venv" />
+-    </content>
+-    <orderEntry type="jdk" jdkName="Python 3.9 (Blocks_n_Bots)" jdkType="Python SDK" />
+-    <orderEntry type="sourceFolder" forTests="false" />
+-  </component>
+-</module>
+\ No newline at end of file
+Index: .idea/misc.xml
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+deleted file mode 100644
+--- a/.idea/misc.xml	(revision f1e6e9800548ac602876b902d5dfda6eef739369)
++++ /dev/null	(revision f1e6e9800548ac602876b902d5dfda6eef739369)
+@@ -1,4 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (Blocks_n_Bots)" project-jdk-type="Python SDK" />
+-</project>
+\ No newline at end of file
