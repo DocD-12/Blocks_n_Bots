@@ -11,13 +11,15 @@ blue = (0, 0, 255)
 grey = (127, 127, 127)
 
 class Game:
-    def __init__(self, size):
+    def __init__(self, size, tile_size=32):
         self.grid = [[-1 if (i == 0 or i == size - 1 or j == 0 or j == size -1) else 0
                       for j in range(size)] for i in range(size)]
 
-        self.screen_width = 500
-        self.screen_height = 500
+        self.screen_width = size * tile_size
+        self.screen_height = size * tile_size
         self.win = None
+        self.tile_size = tile_size
+        self.player_speed = 3 * tile_size
 
     def start(self):
         pygame.init()
@@ -65,7 +67,10 @@ class Game:
         print(*self.grid, sep='\n')
 
     def draw(self):
-        for x in range(0, self.screen_width, 50):
+        for x in range(0, self.screen_width, self.tile_size):
             pygame.draw.line(self.win, white, (x, 0), (x, self.screen_height))
-        for y in range(0, self.screen_height, 50):
+        for y in range(0, self.screen_height, self.tile_size):
             pygame.draw.line(self.win, white, (0, y), (self.screen_width, y))
+
+    def get_tile_size(self):
+        return self.tile_size

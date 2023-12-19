@@ -14,7 +14,7 @@ MAP = [['1' if i == 0 or i == N_HEIGHT-1 or j == 0 or j == N_WIDTH-1
 
 for i in range(1, N_HEIGHT-1):
     for j in range(1, N_WIDTH-1):
-        if not randint(0,20):
+        if not randint(0, 10):
             MAP[i][j] = '1'
 
 MAP[N_HEIGHT // 2][N_WIDTH // 2] = 'P'
@@ -93,43 +93,44 @@ class Obstacle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(x * TILESIZE, y * TILESIZE))
 
 
-pygame.init()
-window = pygame.display.set_mode((WIDTH, HEIGHT))
-clock = pygame.time.Clock()
+if __name__ == "__main__":
+    pygame.init()
+    window = pygame.display.set_mode((WIDTH, HEIGHT))
+    clock = pygame.time.Clock()
 
-all_sprites = pygame.sprite.Group()
-walls = pygame.sprite.Group()
-for row, tiles in enumerate(MAP):
-    for col, tile in enumerate(tiles):
-        if tile == "1":
-            obstacle = Obstacle(col, row)
-            walls.add(obstacle)
-            all_sprites.add(obstacle)
-        elif tile == "P":
-            player = Player(col, row)
-            all_sprites.add(player)
+    all_sprites = pygame.sprite.Group()
+    walls = pygame.sprite.Group()
+    for row, tiles in enumerate(MAP):
+        for col, tile in enumerate(tiles):
+            if tile == "1":
+                obstacle = Obstacle(col, row)
+                walls.add(obstacle)
+                all_sprites.add(obstacle)
+            elif tile == "P":
+                player = Player(col, row)
+                all_sprites.add(player)
 
-run = True
-while run:
-    dt = clock.tick(60) / 1000
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
+    run = True
+    while run:
+        dt = clock.tick(60) / 1000
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
 
-    player.update(dt, walls)
+        player.update(dt, walls)
 
-    window.fill((255, 255, 255))
+        window.fill((255, 255, 255))
 
-    for x in range(0, window.get_width(), TILESIZE):
-        pygame.draw.line(window, (127, 127, 127), (x, 0), (x, window.get_height()))
-    for y in range(0, window.get_height(), TILESIZE):
-        pygame.draw.line(window, (127, 127, 127), (0, y), (window.get_width(), y))
+        for x in range(0, window.get_width(), TILESIZE):
+            pygame.draw.line(window, (0, 0, 0), (x, 0), (x, window.get_height()))
+        for y in range(0, window.get_height(), TILESIZE):
+            pygame.draw.line(window, (127, 127, 127), (0, y), (window.get_width(), y))
 
-    walls.draw(window)
-    for sprite in all_sprites:
-        window.blit(sprite.image, sprite.rect)
+        walls.draw(window)
+        for sprite in all_sprites:
+            window.blit(sprite.image, sprite.rect)
 
-    pygame.display.flip()
+        pygame.display.flip()
 
-pygame.quit()
-exit()
+    pygame.quit()
+    exit()
