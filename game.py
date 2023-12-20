@@ -1,6 +1,7 @@
 import pygame
 import random
 import time
+from player import *
 
 # Define the colors
 white = (255, 255, 255)
@@ -10,16 +11,18 @@ green = (0, 255, 0)
 blue = (0, 0, 255)
 grey = (127, 127, 127)
 
+
 class Game:
     def __init__(self, size, tile_size=32):
-        self.grid = [[-1 if (i == 0 or i == size - 1 or j == 0 or j == size -1) else 0
+        self.grid = [[-1 if (i == 0 or i == size - 1 or j == 0 or j == size - 1) else 0
                       for j in range(size)] for i in range(size)]
 
-        self.screen_width = (size + 2) * tile_size
+        self.screen_width = (size) * tile_size
         self.screen_height = (size + 2) * tile_size
         self.window = None
         self.tile_size = tile_size
         self.player_speed = 3 * tile_size
+        self.n = size
 
     def start(self):
         pygame.init()
@@ -30,20 +33,37 @@ class Game:
         running = True
         start_time = time.time()
         game_duration = 105  # Время в секундах
+
+        walls = pygame.sprite.Group()
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.grid[i][j] == -1:
+                    x = FieldObject(i, j, self.tile_size)
+                    walls.add(x)
+
+        all_sprites = pygame.sprite.Group()
+        x = Player(5, 5, self.tile_size, blue)
+        all_sprites.add(x)
+        # -------------------------------------------------------------------------------
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
-            # Управление с клавиатуры для четвертого игрока
-            keys = pygame.key.get_pressed()
-            # player4.move(keys)
+            # Управление с клавиатуры
+            # keys = pygame.key.get_pressed()
 
             # Отображение игрового поля
             self.window.fill(white)
             self.draw()
+            walls.draw(self.window)
+            all_sprites.draw(self.window)
 
-            # Отображение ИИ ботов
+            # Отображение игроков
+            pass
+
+            # Отображение блоков
+
 
             # Отображение текущих очков
             font = pygame.font.Font(None, 36)
@@ -65,6 +85,7 @@ class Game:
             if passed_time >= game_duration:
                 running = False
 
+    # ------------------------------------------------------------------------------
     def print_grid(self):
         print(*self.grid, sep='\n')
 
