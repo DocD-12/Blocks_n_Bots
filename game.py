@@ -17,12 +17,18 @@ class Game:
         self.grid = [[-1 if (i == 0 or i == size - 1 or j == 0 or j == size - 1) else 0
                       for j in range(size)] for i in range(size)]
 
-        self.screen_width = (size) * tile_size
+        self.screen_width = size * tile_size
         self.screen_height = (size + 2) * tile_size
         self.window = None
         self.tile_size = tile_size
         self.player_speed = 3 * tile_size
         self.n = size
+        self.walls = pygame.sprite.Group()
+        self.all_sprites = pygame.sprite.Group()
+        self.teams = []
+
+    def add_team(self, team):
+        self.teams.append(team)
 
     def start(self):
         pygame.init()
@@ -34,16 +40,16 @@ class Game:
         start_time = time.time()
         game_duration = 105  # Время в секундах
 
-        walls = pygame.sprite.Group()
         for i in range(self.n):
             for j in range(self.n):
                 if self.grid[i][j] == -1:
                     x = FieldObject(i, j, self.tile_size)
-                    walls.add(x)
+                    self.walls.add(x)
 
-        all_sprites = pygame.sprite.Group()
-        x = Player(5, 5, self.tile_size, blue)
-        all_sprites.add(x)
+        for team in self.teams:
+            for player in team.players:
+                self.all_sprites.add(player)
+
         # -------------------------------------------------------------------------------
         while running:
             for event in pygame.event.get():
@@ -53,17 +59,19 @@ class Game:
             # Управление с клавиатуры
             # keys = pygame.key.get_pressed()
 
-            # Отображение игрового поля
-            self.window.fill(white)
-            self.draw()
-            walls.draw(self.window)
-            all_sprites.draw(self.window)
-
             # Отображение игроков
-            pass
+            for team in self.teams:
+                for player in team.players:
+                    player.update()
 
             # Отображение блоков
 
+
+            # Отображение игрового поля
+            self.window.fill(white)
+            self.draw()
+            self.walls.draw(self.window)
+            self.all_sprites.draw(self.window)
 
             # Отображение текущих очков
             font = pygame.font.Font(None, 36)
