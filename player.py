@@ -1,12 +1,26 @@
 import pygame
 
 
+class Team:
+    def __init__(self, name, color):
+        self.scores = 0
+        self.players = []
+        self.name = name
+        self.color = color
+
+    def add_player(self, player):
+        self.players.append(player)
+
+    def get_scores(self):
+        return self.scores
+
+
 class FieldObject(pygame.sprite.Sprite):
     def __init__(self, x, y, size):
         super().__init__()
         self.image = pygame.Surface((size, size))
         self.image.fill((0, 0, 0))
-        self.rect = self.image.get_rect(topleft=(x * size, (y+2) * size))
+        self.rect = self.image.get_rect(topleft=(x * size, (y + 2) * size))
 
 
 class Player(FieldObject):
