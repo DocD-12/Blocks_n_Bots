@@ -18,4 +18,4 @@ if __name__ == '__main__':
     mGame.add_team(tBlue)
 
     mGame.print_grid()
-    # mGame.start()
+    mGame.start()

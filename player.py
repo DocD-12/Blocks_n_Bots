@@ -99,7 +99,7 @@ class Player(FieldObject):
         if self.id == 20:
             print(grid[self.y + 1][self.x])
             print("Coords:", self.x, self.y)
-            if grid[self.x + 1][self.y] == 0:
+            if grid[self.y + 1][self.x] == 0:
                 self.down()
 
     def left(self):
